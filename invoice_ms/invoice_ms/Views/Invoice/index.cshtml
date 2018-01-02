@@ -1,0 +1,418 @@
+﻿
+@{
+    ViewBag.Title = "Invoice";
+}
+
+<h2>Invoice List</h2>
+
+<button class="btn btn-success addBtn" onclick="AddInvoiceModal()">Add</button>
+
+<div id="invoiceModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Invoice</h4>
+            </div>
+            <form id="invoiceForm">
+                <div class="modal-body row">
+
+                    <div class="form-group col-md-6">
+                        <label for="name">Client</label>
+                        <select class="form-control" id="clientSelect" name="client_id">
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">Bank</label>
+                        <select class="form-control" id="bankSelect" name="bank_id"></select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">Invoice Date</label>
+                        <input type="date" class="form-control" name="date" value="" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">Due Date</label>
+                        <input type="date" class="form-control" name="duedate" value="" />
+                    </div>
+                    <div class="container">
+                        <hr />
+                        <h3>products</h3>
+                        <button type="button" class="btn btn-success" onclick='addHtml("products")'>+</button>
+                        <button type="button" class="btn btn-success" onclick='removeHtml("products")'>-</button>
+                        <div id="products" style="margin-top:20px;"></div>
+                    </div> 
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+
+<div id="updateInvoiceModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Update Invoice</h4>
+            </div>
+            <form id="updateInvoiceForm">
+                <div class="modal-body row">
+
+                    <input type="hidden" name="Id" value="" id="uid" />
+                    <div class="form-group col-md-6">
+                        <label for="name">Client</label>
+                        <select class="form-control" id="uclientSelect" name="client_id"></select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">Bank</label>
+                        <select class="form-control" id="ubankSelect" name="bank_id"></select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">Invoice Date</label>
+                        <input type="text" class="form-control" name="date" value="" id="udate" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">Due Date</label>
+                        <input type="text" class="form-control" name="duedate" value="" id="uduedate" />
+                    </div>
+                    <div class="form-group col-md-7 col-md-offset-3">
+                        <label for="name">Status</label>
+                        <select name="status_no" id="ustatus" class="form-control">
+                            <option value="1">Complete</option>
+                            <option value="2">Pending</option>
+                        </select>
+                    </div>
+                    <br />
+                    <div class="container">
+                        <hr />
+                        <h3>products</h3>
+                        <button type="button" class="btn btn-success" onclick='addHtml("uproducts")'>+</button>
+                        <button type="button" class="btn btn-success" onclick='removeHtml("uproducts")'>-</button>
+                        <div id="uproducts" style="margin-top:20px;"></div>
+                    </div> 
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Update</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+@if (ViewBag.list.Count == 0)
+{
+    <h1>No record Found</h1>
+}
+else
+{
+    <table id="invoiceTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Client</th>
+                <th>Bank</th>
+                <th>Invoice Date</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in @ViewBag.list)
+            {
+                <tr>
+                    @foreach (var client in @ViewBag.Clients)
+                    {
+                        if (@item.Client_id == @client.Id)
+                        {
+                            <td>@client.Name</td>
+                            break;
+                        }
+                    }
+                   
+                    
+                    @foreach (var bank in @ViewBag.Banks)
+                    {
+                        if (@item.Bank_id == @bank.Id)
+                        {
+                            <td>@bank.Name</td>
+                            break;
+                        }
+                    }
+                    <td>@item.Date</td>
+                    <td>@item.DueDate</td>
+                    @if (@item.Status_no == 1)
+                    {
+                        <td>Complete</td>
+                    }
+                    else
+                    {
+                        <td>pending</td>
+                    }
+                    <td>
+                        <a class="btn btn-warning" href="/invoice/GenerateInvoice/@item.Id">Generate</a>
+                        <button class="btn btn-info" onclick='openModal(@Html.Raw(Json.Encode(@item)))'>Update</button>
+                        <button class="btn btn-danger" onclick="deleteRecord(@item.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+<script>
+   
+    $('#invoiceTable').DataTable();
+    var Invoice = @Html.Raw(Json.Encode(ViewBag.list));
+    var Banks=@Html.Raw(Json.Encode(ViewBag.Banks));
+    var Clients=@Html.Raw(Json.Encode(ViewBag.Clients));
+    var Products=@Html.Raw(Json.Encode(ViewBag.Products));
+    console.log(Invoice);
+    var setmodals=function(){
+        $.each(Clients, function (i, item) {
+            $('#clientSelect').append($('<option>', { 
+                value: item.Id,
+                text : item.Name 
+            }));
+            $('#uclientSelect').append($('<option>', { 
+                value: item.Id,
+                text : item.Name 
+            }));
+        });
+        $.each(Banks, function (i, item) {
+            $('#bankSelect').append($('<option>', { 
+                value: item.Id,
+                text : item.Name 
+            }));
+            $('#ubankSelect').append($('<option>', { 
+                value: item.Id,
+                text : item.Name 
+            }));
+        });
+       
+    }();
+    var AddInvoiceModal=function(){
+        //console.log('clicked');
+        //$.each(Clients, function (i, item) {
+        //    $('#clientSelect').append($('<option>', { 
+        //        value: item.Id,
+        //        text : item.Name 
+        //    }));
+        //});
+        //$.each(Banks, function (i, item) {
+        //    $('#bankSelect').append($('<option>', { 
+        //        value: item.Id,
+        //        text : item.Name 
+        //    }));
+        //});
+        $('#invoiceModal').modal('show');
+    }
+    var addHtml=function(id){
+        var options='';
+        $.each(Products, function (i, item) {
+            options+=`<option value=${item.Id} >${item.Name}</option>`
+        });
+        var html = `
+                <div class ="form-group">
+                    
+                    <select class ="form-control" style="width:20%;display:inline-block;" name="id">
+                        ${options}
+                    </select>
+                    <input type="number" name="qty" class ="form-control" style="margin-left:20px;display:inline-block;" placeholder="Quantity"/>
+                </div>
+                `
+        $(`#${id}`).append(html);
+        console.log('add called');
+    }
+    var removeHtml = function (id) {
+        $(`#${id} div`).slice(-1).remove();
+        console.log('remove called');
+    }
+    var openModal=function(data){
+
+        $.get('/invoice/getInvoice/'+data.Id,null,function(invoice){
+            $('#uid').val(invoice.Id);
+            $('#uclientSelect').val(invoice.Client_id);
+            $('#ubankSelect').val(invoice.Bank_id);
+            $('#ustatus').val(invoice.Status_no);
+            $('#udate').val(invoice.Date);
+            $('#uduedate').val(invoice.DueDate);
+            var uoptions=''
+            var counter=0;
+            invoice.products.forEach(function(product){
+                console.log(product)
+                $.each(Products, function (i, item) {
+                    uoptions+=`<option value=${item.Id} >${item.Name}</option>`
+                });
+                var html = `
+                <div class ="form-group">
+                    
+                    <select class ="form-control" style="width:20%;display:inline-block;" name="id" id=${counter}>
+                        ${uoptions}
+                    </select>
+                    <input type="number" name="qty" class ="form-control" style="margin-left:20px;display:inline-block;" placeholder="Quantity" value=${product.Qty} />
+                </div>
+                `
+                $('#uproducts').append(html);
+                var selectId='#'+counter;
+                $(selectId).val(product.Id);
+                counter++;
+
+            })
+            
+        })
+       
+        $('#updateInvoiceModal').modal('show');
+    }
+    //console.log(Banks);
+    //console.log(Clients);
+    //console.log(Products);
+    //console.log(Invoice);
+
+
+    //var b=JSON.parse(a);
+    //console.log(a);
+    //console.log(b);
+    //var date = new Date(Date.parse(b.Date));
+    //console.log(date);
+    
+    $(document).ready(function () {
+        
+        //insertion
+        $('#invoiceForm').submit(function (e) {
+            var counter=0;
+            //prevent default behavior on submit
+            e.preventDefault();
+            //convert all form values in obj and store in result
+            var result = $('#invoiceForm').serializeArray().reduce(function (obj, item) {
+                if(item.name=='id'){
+
+                    var Prate;
+                    $.each(Products,function(i,p){
+                        if(p.Id==item.value){
+                            Prate=p.Price
+                        }
+                    })
+                    obj.products[counter]={[item.name]:item.value,'rate':Prate}
+                }
+                else if(item.name=='qty'){
+                    obj.products[counter]=Object.assign(obj.products[counter],{[item.name]:item.value})
+                    counter++
+                }
+                else{
+                    obj[item.name]=item.value;
+                }
+                
+               
+                return obj;
+            }, {products:[],Status_no:'2'});
+            console.log(result);
+            //send post request to server
+            $.post('/invoice/addInvoice', result, function (data, status, xhr) {
+                
+                swal("Succesful","Sucessfully created","success");
+                $('#invoiceModal').modal('toggle');
+                location.reload();
+            }).fail(function (err) {
+                alert('eror');
+            })
+        });
+
+        //update
+        $('#updateInvoiceForm').submit(function (e) {
+            var counter=0;
+            //prevent default behavior on submit
+            e.preventDefault();
+            //convert all form values in obj and store in result
+            var result = $('#updateInvoiceForm').serializeArray().reduce(function (obj, item) {
+                if(item.name=='id'){
+
+                    var Prate;
+                    $.each(Products,function(i,p){
+                        if(p.Id==item.value){
+                            Prate=p.Price
+                        }
+                    })
+                    obj.products[counter]={[item.name]:item.value,'rate':Prate}
+                }
+                else if(item.name=='qty'){
+                    obj.products[counter]=Object.assign(obj.products[counter],{[item.name]:item.value})
+                    counter++
+                }
+                else{
+                    obj[item.name]=item.value;
+                }
+                
+               
+                return obj;
+            }, {products:[]});
+
+            //send put request to server
+            $.ajax({
+                method: 'put',
+                data: result,
+                url: '/invoice/updateInvoice/',
+                success: function () {
+                    swal("Succesful","Successfully updated","success");
+                    location.reload();
+                },
+                error: function (data) {
+                    alert('error')
+                }
+            })
+        })
+    })
+
+
+    function deleteRecord(id) {
+        swal({
+            title: "Are you sure?",
+            text: "You will not be able to recover this!",
+            type: "warning",
+            showCancelButton: true,
+            showLoaderOnConfirm:true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "delete it!",
+            cancelButtonText: "No, cancel",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+           function(isConfirm){
+               if (isConfirm) {
+                   $.ajax({
+                       method: 'delete',
+                       url: '/invoice/deleteInvoice/' + id,
+                       success: function () {
+                           swal("Deleted!", "Successfully Removed", "success");
+                           location.reload();
+                       },
+                       error: function (err) {
+                           swal(err.statusText,"Something went wrong!","error");
+                       }
+                   })
+                    
+               } else {
+                   swal("Cancelled", "Your data is safe :)", "error");
+               }
+           });
+       
+    }
+
+
+</script>
+

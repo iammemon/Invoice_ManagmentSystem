@@ -1,0 +1,443 @@
+﻿
+@{
+    ViewBag.Title = "Client";
+}
+
+<h2>Client List</h2>
+
+<button class="btn btn-success addBtn" data-toggle="modal" data-target="#clientModal">Add</button>
+
+<div id="clientModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Client</h4>
+            </div>
+            <form id="clientForm">
+                <div class="modal-body row">
+
+                    <div class="form-group col-md-6">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" name="name" value="" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">City</label>
+                        <input type="text" class="form-control" name="city" value="" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">Country</label>
+                        <input type="text" class="form-control" name="country" value="" />
+                    </div>
+                    <div class="form-group  col-md-6">
+                        <label for="name">Office Address</label>
+                        <input type="text" class="form-control" name="address" value="" />
+                    </div>
+                    <div class="container">
+                        <hr />
+                        <h3>Contacts</h3>
+                        <button  type="button" class="btn btn-success" onclick='addHtml("contacts")'>+</button>
+                        <button  type="button" class="btn btn-success" onclick='removeHtml("contacts")'>-</button>
+                        <div id="contacts" style="margin-top:20px;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+
+<div id="contactModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Contact Info</h4>
+            </div>
+            <div class="modal-body">
+               <h4>Email</h4>   
+                <ul jput="email" jput-jsondata="">
+                    <li>
+                        {{json.email}}
+                    </li>
+                </ul>
+                <h4>Phone</h4>
+                <ul jput="phone" jput-jsondata="">
+                    <li>
+                        {{json.phone}}
+                    </li>
+                </ul>
+                <h4>Fax</h4>
+                <ul jput="fax" jput-jsondata="">
+                    <li>
+                        {{json.fax}}
+                    </li>
+                </ul> 
+                   
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+<div id="updateClientModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Update Client</h4>
+            </div>
+            <form id="updateClientForm">
+                <div class="modal-body row">
+
+                    <input type="hidden" name="Id" value="" id="uid" />
+                    <div class="form-group col-md-6">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" name="name" value="" id="uname" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">City</label>
+                        <input type="text" class="form-control" name="city" value="" id="ucity" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">Country</label>
+                        <input type="text" class="form-control" name="country" value="" id="ucountry" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">Office Address</label>
+                        <input type="text" class="form-control" name="address" value="" id="uadd" />
+                    </div>
+                    <div class="container">
+                        <hr />
+                        <h3>Contacts</h3>
+                        <button type="button" class="btn btn-success" onclick='addHtml("ucontacts")'>+</button>
+                        <button type="button" class="btn btn-success" onclick='removeHtml("ucontacts")'>-</button>
+                        <div id="ucontacts" style="margin-top:20px;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Update</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+@if (ViewBag.list.Count == 0)
+{
+    <h1>No record Found</h1>
+}
+else
+{
+    <table id="clientTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>City</th>
+                <th>Country</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in @ViewBag.list)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.City</td>
+                    <td>@item.Country</td>
+                    <td>@item.Address</td>                 
+                    <td>
+
+                        <button class="btn btn-info" onclick='contactInfo(@item.Id)'>Contact Info</button>
+                        <button class="btn btn-warning" onclick='openModal(@Html.Raw(Json.Encode(@item)))'>Update</button>
+                        <button class="btn btn-danger" onclick="deleteRecord(@item.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+<script>
+    $('#clientTable').DataTable();
+    var contactInfo;
+    var openModal;
+    var generateTable;
+    var addHtml;
+    var removeHtml;
+
+    $(document).ready(function () {
+        addHtml = function (id) {
+            var html = `
+                <div class ="form-group">
+                    
+                    <select class ="form-control" style="width:20%;display:inline-block;" name="id">
+                        <option value='1'>Email</option>
+                        <option value='2'>Fax</option>
+                        <option value='3'>Phone</option>
+                    </select>
+                    <input type="text" name="contact" class ="form-control" style="margin-left:20px;display:inline-block;" />
+                </div>
+                `
+            $(`#${id}`).append(html);
+            console.log('add called');
+        }
+        removeHtml = function (id) {
+            $(`#${id} div`).slice(-1).remove();
+            console.log('remove called');
+        }
+
+        generateTable =function(data){
+            
+            var email=[];
+            var phone=[];
+            var fax=[];
+            data.forEach(function(item){
+                switch(item.Name){
+                    case "Email":{
+                        email.push({"email":item.Contact});
+                        break;
+                    }
+                    case "Phone":{
+                        phone.push({"phone":item.Contact});
+                        break;
+                    }
+                    case "Fax":{
+                        fax.push({"fax":item.Contact});
+                        break;
+                    }
+                    default:
+                        break;
+
+                }
+            })
+            if (email.length == 0) {
+                email.push({"email":"Not found"})
+            }
+            if (fax.length == 0) {
+                fax.push({ "fax": "Not found" })
+            }
+            if (phone.length == 0) {
+                phone.push({ "phone": "Not found" })
+            }
+            jPut.email.data=email;
+            jPut.phone.data=phone;
+            jPut.fax.data=fax;
+        }
+        contactInfo= function(id){
+            $.get('/Clients/ContactInfo/'+id,null,function(data){
+                console.log(data);
+                generateTable(data);
+                $('#contactModal').modal('show');
+            }).fail(function(err){console.log(err)});
+        }
+        
+        openModal = function (client) {
+            console.log(client);
+            $('#ucontacts').html('');
+            $('#uid').val(client.Id);
+            $('#uname').val(client.Name);
+            $('#ucity').val(client.City);
+            $('#ucountry').val(client.Country);
+            $('#uadd').val(client.Address);
+           
+            $.get('/Clients/ContactInfo/'+client.Id,null,function(data){
+                console.log(data);
+                
+                data.map(function (item) {
+                    var html = `
+                            <div class ="form-group">
+
+                                <select class ="form-control" style="width:20%;display:inline-block;" name="id">
+                                    <option value='1' ${item.Id==1? 'selected' : ''}>Email</option>
+                                    <option value='2'  ${item.Id==2? 'selected': ''}>Fax</option>
+                                    <option value='3'  ${item.Id==3? 'selected': ''}>Phone</option>
+                                </select>
+                                <input type="text" name="contact" class ="form-control" style="margin-left:20px;display:inline-block;" value=${item.Contact} />
+                            </div>`
+                
+                    $(`#ucontacts`).append(html);
+                })
+                //generateTable(data);
+                $('#updateClientModal').modal('show');
+            }).fail(function(err){console.log(err)});
+        }
+        $('#updateClientForm').submit(function (e) {
+            console.log('hey')
+            //prevent default behavior on submit
+            e.preventDefault();
+            var counter = 0;
+            //convert all form values in obj and store in result
+            var result = $('#updateClientForm').serializeArray().reduce(function (obj, item) {
+                if (item.name == "id") {
+                    var name;
+                    switch (item.value) {
+                        case '1':
+                            name = "Email"
+                            break;
+                        case '2':
+                            name = "Fax"
+                            break;
+                        case '3':
+                            name = "Phone"
+                            break;
+                        default:
+                            break;
+
+                    }
+                    obj.ContactInfo[counter] = { [item.name]: item.value, "Name": name };
+                }
+                else if (item.name == "contact") {
+                    obj.ContactInfo[counter] = Object.assign(obj.ContactInfo[counter], { [item.name]: item.value })
+                    counter++
+                }
+                else {
+                    obj[item.name] = item.value;
+                }
+
+                return obj;
+            }, { ContactInfo: [] });
+            console.log(result);
+            $.ajax({
+                method: 'put',
+                data: result,
+                url: '/clients/updateClient/',
+                success: function () {
+                    swal("Succesful","Successfully updated","success");
+                    location.reload();
+                },
+                error: function (data) {
+                    alert('error')
+                }
+            })
+
+        });
+
+        $('#clientForm').submit(function (e) {
+            console.log('hey')
+            //prevent default behavior on submit
+            e.preventDefault();
+            var counter=0;
+            //convert all form values in obj and store in result
+            var result = $('#clientForm').serializeArray().reduce(function (obj, item) {
+                if(item.name=="id"){
+                    var name;
+                    switch(item.value){
+                        case '1':
+                            name="Email"
+                            break;
+                        case '2':
+                            name="Fax"
+                            break;
+                        case '3':
+                            name="Phone"
+                            break;
+                        default:
+                            break;
+                        
+                    }
+                    obj.ContactInfo[counter]={[item.name]:item.value,"Name":name};
+                }
+                else if(item.name=="contact"){
+                    obj.ContactInfo[counter]=Object.assign(obj.ContactInfo[counter],{[item.name]:item.value})
+                    counter++
+                }
+                else{
+                    obj[item.name]=item.value;
+                }
+                
+                return obj;
+            }, {ContactInfo:[]});
+            console.log(result);
+            //send post request to server
+            $.post('/Clients/addClient', result, function (data, status, xhr) {
+                //alert('sucess');
+                swal("Succesful","Sucessfully created","success");
+                $('#clientModal').modal('toggle');
+             
+                location.reload();
+            }).fail(function (err) {
+                swal(err.statusText,"Something went wrong","error")
+            })
+           
+        });
+
+        
+    })
+
+
+    function deleteRecord(id) {
+        swal({
+            title: "Are you sure?",
+            text: "You will not be able to recover this!",
+            type: "warning",
+            showCancelButton: true,
+            showLoaderOnConfirm:true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "delete it!",
+            cancelButtonText: "No, cancel",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+           function(isConfirm){
+               if (isConfirm) {
+                   $.ajax({
+                       method: 'delete',
+                       url: '/clients/DeleteClient/' + id,
+                       success: function () {
+                           swal("Deleted!", "Successfully Removed", "success");
+                           location.reload();
+                       },
+                       error: function (err) {
+                           swal(err.statusText,"Something went wrong!","error");
+                       }
+                   })
+                    
+               } else {
+                   swal("Cancelled", "Your data is safe :)", "error");
+               }
+           });
+       
+    }
+    function OpenModal(bank) {
+
+        $('#uid').val(bank.Id);
+        $('#uname').val(bank.Name);
+        $('#ucity').val(bank.City);
+        $('#ucountry').val(bank.Country);
+        $('#uiban').val(bank.Iban);
+        $('#uswift').val(bank.Swift);
+        $('#updatebankModal').modal('show');
+    }
+
+</script>
+
+
+
+
+
+

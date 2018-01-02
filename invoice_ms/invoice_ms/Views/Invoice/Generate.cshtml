@@ -1,0 +1,140 @@
+﻿
+@{
+    ViewBag.Title = "Generate";
+}
+
+<div class="container">
+    
+    <div class="row">
+        
+        <div class="col-xs-4">
+            <h2>ABC Company</h2>
+            <br />
+            <p>Abc Street</p>
+            <p>Karachi</p>
+            <p>021-2389546-47-48</p>
+            <p>Fax:021-2354567</p>
+        </div>
+
+        <div class="col-xs-8 text-right">
+            <h2>Invoice</h2>
+            <br />
+            <p><strong>Date </strong>@ViewBag.invoice.Date</p>
+            <p><strong>Invoice # </strong>@ViewBag.invoice.Id</p>
+            <p><strong>Customer ID </strong>@ViewBag.invoice.Client_id</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-xs-6">
+            <h2 style="background:#0077CC;padding:5px;color:white">Bill To</h2>
+            <br />
+            <div class="row">
+                <div class="col-xs-4">
+                    <p><strong>Name </strong>@ViewBag.client.Name</p>
+                    <p><strong>City </strong>@ViewBag.client.City</p>
+                    <p><strong>Country </strong>@ViewBag.client.Country</p>
+                    <p><strong>Address </strong>@ViewBag.client.Address</p>
+                </div>
+                <div class="col-xs-8">
+                    @if (ViewBag.client.Contactinfo.Count > 0)
+            {
+                        <div>
+                            <strong>Email</strong>
+                            @foreach (var item in ViewBag.client.Contactinfo)
+                            {
+                                if (item.Name == "Email")
+                                {
+                                    <p>@item.Contact</p>
+                                }
+                            }
+                        </div>
+                        <div>
+                            <strong>Fax</strong>
+                            @foreach (var item in ViewBag.client.Contactinfo)
+                            {
+                                if (item.Name == "Fax")
+                                {
+                                    <p>@item.Contact</p>
+                                }
+                            }
+                        </div>
+                        <div>
+                            <strong>Phone</strong>
+                            @foreach (var item in ViewBag.client.Contactinfo)
+                            {
+                                if (item.Name == "Phone")
+                                {
+                                    <p>@item.Contact</p>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            
+        </div>
+        <div class="col-xs-6 text-right" >
+            <h2 style="background:#0077CC;padding:5px;color:white">Bank Details</h2>
+            <br />
+            <p><strong>Name </strong>@ViewBag.bank.Name</p>
+            <p><strong>City </strong>@ViewBag.bank.City</p>
+            <p><strong>Country </strong>@ViewBag.bank.Country</p>
+            <p><strong>IBAN </strong>@ViewBag.bank.Iban</p>
+            <p><strong>SWIFT </strong>@ViewBag.bank.Swift</p>
+        </div>
+    </div>
+        <br />
+        <br />
+        <table class="table table-striped text-center">
+            <thead>
+                <tr>
+                    <th style="text-align:center">
+                        Product Name
+                    </th>
+                    <th style="text-align:center">
+                        Product Quantity
+                    </th>
+                    <th style="text-align:center">
+                        Product Rate
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var i = 0; i < ViewBag.products.Count; i++) {
+                    <tr>
+                        <td>@ViewBag.products[i].Name</td>
+                        <td>@ViewBag.invoice.products[i].Qty</td>
+                        <td>@ViewBag.invoice.products[i].Rate</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="text-right">
+            <h4 id="amount" style="margin-right:100px"></h4>
+            
+        </div>
+
+    </div>
+    <br />
+    <br />
+    <div class="container text-center">
+        <h4>If you have any questions about this invoice Please Contact!</h4>
+        <br />
+        <h2>ThankYou For Your Business</h2>
+    </div>
+
+
+
+<script>
+    $('.navbar.navbar-inverse.navbar-fixed-top').css('display', 'none');
+    var products= @Html.Raw(Json.Encode(ViewBag.invoice.products));
+    var totalAmount=0;
+    products.forEach((item)=>{
+        totalAmount+=(item.Rate*item.Qty);
+    })
+    $('#amount').html('Total Amount: '+totalAmount+'/=');
+    console.log(products);
+</script>
+
